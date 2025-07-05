@@ -15,7 +15,7 @@ Acessa um dashboard informativo com:
 
 Total de fichas geradas por mês.
 Fichas distribuídas por modalidade de serviço.
-Gráficos interativos (linha e pizza).
+Gráficos interativos
 Sem permissão para criar, editar ou interferir nas fichas.
 
 🛠️ Tecnologias Utilizadas
