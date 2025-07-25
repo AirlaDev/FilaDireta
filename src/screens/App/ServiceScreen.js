@@ -13,7 +13,7 @@ export default function ServiceScreen({ navigation }) {
             <Text style={styles.serviceText}>{service.name}</Text>
           </TouchableOpacity>
         ))}
-        <TouchableOpacity style={[styles.button, !selectedService && styles.buttonDisabled]} disabled={!selectedService} onPress={() => navigation.navigate('SelectDate', { service: selectedService })}>
+        <TouchableOpacity style={[styles.button, !selectedService && styles.buttonDisabled]} disabled={!selectedService} onPress={() => navigation.navigate('SelectShift', { service: selectedService })}>
           <Text style={styles.buttonText}>Avançar</Text>
         </TouchableOpacity>
       </View>
