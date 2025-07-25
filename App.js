@@ -1,11 +1,15 @@
 import React from 'react';
-import { View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
   return (
-    <View style={{ flex: 1 }}>
-      <AppNavigator />
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar style="auto" />
+        <AppNavigator />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
