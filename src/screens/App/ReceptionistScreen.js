@@ -1,52 +1,45 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, SafeAreaView, FlatList, ActivityIndicator, Alert } from 'react-native';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { View, Text, SafeAreaView, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { collection, query, where, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
-import { auth, db } from '../../config/firebase';
+import { db } from '../../config/firebase';
 import { styles } from '../../config/styles';
 
-export default function MyTicketsScreen() {
+export default function ReceptionistScreen() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const user = auth.currentUser;
 
   const fetchTickets = useCallback(async () => {
     setLoading(true);
-    if (!user) {
-      setTickets([]);
-      setLoading(false);
-      return;
-    }
-    
     try {
       const today = new Date().toISOString().split('T')[0];
+      console.log(`Buscando fichas para a data: ${today}`); // Log para depuração
       
       const q = query(
         collection(db, "appointments"), 
-        where("userId", "==", user.uid),
-        where("date", ">=", today),
-        where("status", "==", "ativo"), // Adicione esta linha para filtrar por status
-        orderBy("date"),
+        where("date", "==", today),
+        where("status", "==", "ativo"),
         orderBy("time")
       );
       
       const querySnapshot = await getDocs(q);
-      const userTickets = querySnapshot.docs.map(doc => ({
+      const dailyTickets = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       
-      setTickets(userTickets);
+      console.log(`Fichas encontradas: ${dailyTickets.length}`); // Log para depuração
+      setTickets(dailyTickets);
       
     } catch (error) {
-      console.error("Erro detalhado:", error);
+      console.error("Erro detalhado ao buscar fichas:", error);
       Alert.alert("Erro", `Falha ao buscar fichas: ${error.message}`);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [user]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -54,15 +47,20 @@ export default function MyTicketsScreen() {
     }, [fetchTickets])
   );
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    fetchTickets();
+  const handleCheckIn = async (ticketId) => {
+    try {
+      const ticketRef = doc(db, "appointments", ticketId);
+      await updateDoc(ticketRef, {
+        status: "concluido"
+      });
+      Alert.alert("Sucesso", "Check-in do paciente realizado.");
+      fetchTickets(); // Atualiza a lista
+    } catch (error) {
+      Alert.alert("Erro", `Não foi possível fazer o check-in: ${error.message}`);
+    }
   };
 
   const renderItem = ({ item }) => {
-    const [year, month, day] = item.date.split('-');
-    const formattedDate = `${day}/${month}/${year}`;
-    
     return (
       <View style={styles.ticketCard}>
         <View style={styles.ticketHeader}>
@@ -70,10 +68,11 @@ export default function MyTicketsScreen() {
           <Text style={styles.ticketNumber}>Ficha N° {item.ticketNumber}</Text>
         </View>
         <Text style={styles.ticketInfo}>Paciente: {item.userName || 'Não informado'}</Text>
-        <Text style={styles.ticketInfo}>Data: {formattedDate}</Text>
-        <Text style={styles.ticketInfo}>Turno: {item.shift || 'Não informado'}</Text>
+        <Text style={styles.ticketInfo}>Turno: {item.shift}</Text>
         <Text style={styles.ticketInfo}>Horário: {item.time}</Text>
-        {item.status && <Text style={styles.ticketInfo}>Status: {item.status}</Text>}
+        <TouchableOpacity style={styles.button} onPress={() => handleCheckIn(item.id)}>
+            <Text style={styles.buttonText}>Check-in</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -95,19 +94,15 @@ export default function MyTicketsScreen() {
         contentContainerStyle={{ padding: 20 }}
         ListHeaderComponent={
           <Text style={styles.dashboardTitle}>
-            Minhas Fichas Ativas ({tickets.length})
+            Fichas do Dia ({tickets.length})
           </Text>
         }
         ListEmptyComponent={
           <View style={styles.centered}>
-            <Text style={{ textAlign: 'center' }}>
-              Nenhuma ficha ativa encontrada.
-              {'\n\n'}
-              <Text style={{ color: '#007AFF' }}>Arraste para atualizar</Text>
-            </Text>
+            <Text style={{ textAlign: 'center' }}>Nenhuma ficha ativa para hoje.</Text>
           </View>
         }
-        onRefresh={handleRefresh}
+        onRefresh={fetchTickets}
         refreshing={refreshing}
       />
     </SafeAreaView>

@@ -3,12 +3,12 @@ import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicat
 import { collection, getDocs } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { db, auth } from '../../config/firebase.js';
-import { styles } from '../Auth/LoginScreen.js';
+import { styles } from '../../config/styles.js';
 import { BarChart, PieChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get("window").width;
 
-export const AdminDashboard = () => {
+export default function AdminDashboard({ navigation }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +24,7 @@ export const AdminDashboard = () => {
       }, {});
 
       const porMes = appointments.reduce((acc, curr) => {
-        const month = curr.date.substring(5, 7); // Pega apenas o mês
+        const month = curr.date.substring(5, 7);
         acc[month] = (acc[month] || 0) + 1;
         return acc;
       }, {});
@@ -57,6 +57,10 @@ export const AdminDashboard = () => {
             <Text style={styles.dashboardTitle}>Dashboard</Text>
             <TouchableOpacity onPress={() => signOut(auth)}><Text style={styles.logoutText}>Sair</Text></TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ReceptionistView')}>
+          <Text style={styles.buttonText}>Acompanhamento Diário</Text>
+        </TouchableOpacity>
 
         <View style={styles.statCard}>
             <Text style={styles.statLabel}>Fichas por Modalidade</Text>
