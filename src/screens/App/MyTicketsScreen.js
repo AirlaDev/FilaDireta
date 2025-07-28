@@ -26,7 +26,7 @@ export default function MyTicketsScreen() {
         collection(db, "appointments"), 
         where("userId", "==", user.uid),
         where("date", ">=", today),
-        where("status", "==", "ativo"), // Adicione esta linha para filtrar por status
+        where("status", "==", "ativo"), // <-- ADICIONE ESTA LINHA
         orderBy("date"),
         orderBy("time")
       );
@@ -73,7 +73,7 @@ export default function MyTicketsScreen() {
         <Text style={styles.ticketInfo}>Data: {formattedDate}</Text>
         <Text style={styles.ticketInfo}>Turno: {item.shift || 'Não informado'}</Text>
         <Text style={styles.ticketInfo}>Horário: {item.time}</Text>
-        {item.status && <Text style={styles.ticketInfo}>Status: {item.status}</Text>}
+        <Text style={styles.ticketInfo}>Status: {item.status}</Text>
       </View>
     );
   };

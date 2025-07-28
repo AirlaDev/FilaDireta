@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react'; // Import useCallback
+import React, { useState, useCallback } from 'react'; // Esta é a linha corrigida
 import { View, Text, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from '../../config/firebase.js';
 import { styles } from '../../config/styles.js';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { useFocusEffect } from '@react-navigation/native';
 
 const SHIFT_LIMIT = 10;
 
@@ -47,7 +47,6 @@ export default function DateScreen({ navigation, route }) {
     setLoading(false);
   }, [user.uid]);
 
-  // a busca de agendamentos toda vez que a tela recebe foco
   useFocusEffect(
     useCallback(() => {
       fetchAppointments();
@@ -59,11 +58,27 @@ export default function DateScreen({ navigation, route }) {
       Alert.alert("Atenção", "Você já possui um agendamento para este dia.");
       return;
     }
+    
     const dayOfWeek = new Date(day.dateString + 'T00:00:00').getUTCDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
         Alert.alert("Atenção", "Não há agendamentos para fins de semana.");
         return;
     }
+
+    const now = new Date();
+    const todayString = now.toISOString().split('T')[0];
+    const isToday = day.dateString === todayString;
+    const isMorningShift = shift === 'Manhã';
+    const isPastMorningTime = now.getHours() >= 11;
+
+    if (isToday && isMorningShift && isPastMorningTime) {
+      Alert.alert(
+        "Turno Encerrado",
+        "Não é possível agendar para o turno da manhã, pois o horário já passou."
+      );
+      return;
+    }
+
     setSelectedDate(day.dateString);
   }
 

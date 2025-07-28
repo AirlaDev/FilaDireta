@@ -14,7 +14,6 @@ export default function ReceptionistScreen() {
     setLoading(true);
     try {
       const today = new Date().toISOString().split('T')[0];
-      console.log(`Buscando fichas para a data: ${today}`); // Log para depuração
       
       const q = query(
         collection(db, "appointments"), 
@@ -29,11 +28,10 @@ export default function ReceptionistScreen() {
         ...doc.data()
       }));
       
-      console.log(`Fichas encontradas: ${dailyTickets.length}`); // Log para depuração
       setTickets(dailyTickets);
       
     } catch (error) {
-      console.error("Erro detalhado ao buscar fichas:", error);
+      console.error("Erro detalhado:", error);
       Alert.alert("Erro", `Falha ao buscar fichas: ${error.message}`);
     } finally {
       setLoading(false);
@@ -54,7 +52,7 @@ export default function ReceptionistScreen() {
         status: "concluido"
       });
       Alert.alert("Sucesso", "Check-in do paciente realizado.");
-      fetchTickets(); // Atualiza a lista
+      fetchTickets(); // Refresh the list
     } catch (error) {
       Alert.alert("Erro", `Não foi possível fazer o check-in: ${error.message}`);
     }
@@ -68,9 +66,9 @@ export default function ReceptionistScreen() {
           <Text style={styles.ticketNumber}>Ficha N° {item.ticketNumber}</Text>
         </View>
         <Text style={styles.ticketInfo}>Paciente: {item.userName || 'Não informado'}</Text>
-        <Text style={styles.ticketInfo}>Turno: {item.shift}</Text>
+        <Text style={styles.ticketInfo}>Turno: {item.shift || 'Não informado'}</Text>
         <Text style={styles.ticketInfo}>Horário: {item.time}</Text>
-        <TouchableOpacity style={styles.button} onPress={() => handleCheckIn(item.id)}>
+        <TouchableOpacity style={[styles.button, {marginTop: 10}]} onPress={() => handleCheckIn(item.id)}>
             <Text style={styles.buttonText}>Check-in</Text>
         </TouchableOpacity>
       </View>
