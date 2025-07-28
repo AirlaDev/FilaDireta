@@ -8,7 +8,6 @@ import { auth } from '../config/firebase.js';
 import { styles } from '../config/styles.js';
 import { Ionicons } from '@expo/vector-icons';
 
-// Importando as telas
 import LoginScreen from '../screens/Auth/LoginScreen.js';
 import RegisterScreen from '../screens/Auth/RegisterScreen.js';
 import HomeScreen from '../screens/App/HomeScreen.js';
@@ -18,12 +17,14 @@ import DateScreen from '../screens/App/DateScreen.js';
 import ConfirmationScreen from '../screens/App/ConfirmationScreen.js';
 import AdminDashboard from '../screens/App/AdminDashboard.js';
 import MyTicketsScreen from '../screens/App/MyTicketsScreen.js';
+import ReceptionistScreen from '../screens/App/ReceptionistScreen.js';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
+const AdminStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const ADMIN_UID = "CmhlPdJgD9agRYRI8JlUP1rMjN242"; 
+const ADMIN_UID = "mhlPdJgD9agRYRI8JlUP1rMjN242"; 
 
 const AppointmentNavigator = () => (
     <AppStack.Navigator>
@@ -33,6 +34,13 @@ const AppointmentNavigator = () => (
         <AppStack.Screen name="SelectDate" component={DateScreen} options={{ title: 'Escolha a Data' }} />
         <AppStack.Screen name="Confirmation" component={ConfirmationScreen} options={{ title: 'Confirmação' }} />
     </AppStack.Navigator>
+);
+
+const AdminNavigator = () => (
+    <AdminStack.Navigator>
+        <AdminStack.Screen name="AdminDashboard" component={AdminDashboard} options={{ headerShown: false }} />
+        <AdminStack.Screen name="ReceptionistView" component={ReceptionistScreen} options={{ title: 'Fichas do Dia' }} />
+    </AdminStack.Navigator>
 );
 
 const MainAppNavigator = () => (
@@ -80,7 +88,7 @@ export default function AppNavigator() {
       <AuthStack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
             user.uid === ADMIN_UID ? (
-                <AuthStack.Screen name="AdminDashboard" component={AdminDashboard} />
+                <AuthStack.Screen name="Admin" component={AdminNavigator} />
             ) : (
                 <AuthStack.Screen name="MainApp" component={MainAppNavigator} />
             )

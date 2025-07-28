@@ -1,7 +1,7 @@
-// config/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { initializeAuth, indexedDBLocalPersistence, getReactNativePersistence } from 'firebase/auth';
+import { Platform } from 'react-native';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAaSUQ1PNfeYl99SFK_TmNBbndD8sz-u_s",
@@ -13,7 +13,24 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Função para inicializar a autenticação de forma segura
+const createAuth = () => {
+  if (Platform.OS === 'web') {
+    // Para a web, usa a persistência padrão do navegador
+    return initializeAuth(app, {
+      persistence: indexedDBLocalPersistence,
+    });
+  } else {
+    // Para mobile, importa o AsyncStorage SÓ AQUI, para não quebrar a web
+    const ReactNativeAsyncStorage = require('@react-native-async-storage/async-storage').default;
+    return initializeAuth(app, {
+      persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+    });
+  }
+};
+
+const auth = createAuth();
 
 export { auth, db };

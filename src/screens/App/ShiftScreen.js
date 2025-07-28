@@ -4,7 +4,7 @@ import { styles } from '../../config/styles.js';
 
 export default function ShiftScreen({ navigation, route }) {
   const { service } = route.params;
-  const shifts = ['Manhã (07h às 11h)', 'Tarde (13h às 15h)'];
+  const shifts = ['Manhã (07h às 11h)', 'Tarde (13h às 17h)'];
 
   const handleShiftSelection = (shift) => {
     const selectedShift = shift.split(' ')[0];
