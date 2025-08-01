@@ -26,7 +26,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.authContainer}>
-      <Text style={styles.authTitle}>FilaDireta</Text>
+      <Text style={styles.authTitle}>TônaFila</Text>
       <TextInput style={styles.input} placeholder="E-mail" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
       <TextInput style={styles.input} placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry />
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
