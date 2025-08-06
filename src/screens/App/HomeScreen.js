@@ -13,7 +13,7 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity onPress={() => signOut(auth)}><Text style={styles.logoutText}>Sair</Text></TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <Text style={styles.homeTitle}>FilaDireta</Text>
+        <Text style={styles.homeTitle}>TônaFila</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SelectService')}>
           <Text style={styles.buttonText}>Novo Agendamento</Text>
         </TouchableOpacity>
